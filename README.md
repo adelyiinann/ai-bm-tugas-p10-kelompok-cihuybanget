@@ -65,18 +65,25 @@ Contoh augmentasi yang dicoba:
 
 ![Peta kesalahan](hasil/peta_kesalahan.png)
 
-<!-- Hijau = benar, merah = false positive, biru = false negative.
-     Pertanyaan pemandu: Polip seperti apa yang sering terlewat (kecil? datar? warna mirip dinding usus?)
-     Apa yang sering dikira polip padahal bukan? Apakah augmentasi memperbaiki kasus sulit? -->
+Peta kesalahan menunjukkan bahwa kemampuan model U-Net dalam melakukan segmentasi polip berbeda pada setiap citra uji. Pada dua citra yang paling sulit dikenali, model masih menghasilkan kesalahan berupa false positive dan false negative. Kesalahan tersebut terlihat dari area berwarna merah yang menunjukkan bagian bukan polip tetapi diprediksi sebagai polip, serta area biru yang menunjukkan bagian polip yang tidak berhasil terdeteksi.
 
-✍️
+Penggunaan augmentasi belum sepenuhnya mengatasi kesalahan pada kedua citra tersebut. Horizontal flip menghasilkan Dice Score sebesar 0,11 pada citra pertama, sedangkan vertical flip menghasilkan Dice Score sebesar 0,16 pada citra kedua. Sementara itu, skenario tanpa augmentasi dan kecerahan serta kontras memperoleh Dice Score 0,00 pada kedua citra. Hal ini menunjukkan bahwa perubahan orientasi gambar dapat membantu model pada beberapa kasus, tetapi belum mampu meningkatkan hasil segmentasi secara konsisten pada citra yang sulit.
+
+Berbeda dengan dua citra tersebut, dua citra uji yang paling mudah dikenali menunjukkan hasil segmentasi yang lebih baik. Seluruh skenario menghasilkan Dice Score pada rentang 0,94 hingga 0,98. Hal ini menunjukkan bahwa model mampu melakukan segmentasi dengan baik pada citra yang karakteristik polipnya lebih mudah dikenali.
+
+Secara keseluruhan, peta kesalahan memperlihatkan bahwa tingkat keberhasilan segmentasi dipengaruhi oleh karakteristik citra dan kemampuan model dalam membedakan area polip dari jaringan di sekitarnya. Augmentasi dapat memberikan perbaikan pada kondisi tertentu, tetapi tidak selalu mampu mengatasi kesalahan pada citra yang memiliki tingkat kesulitan tinggi.
 
 ## 6. Pembahasan & kesimpulan
 
 <!-- Bandingkan hasil dengan hipotesis di Bagian 3. Hipotesis yang ternyata salah tetap bernilai,
      asalkan dijelaskan kenapa. Perbedaan kecil (lebih kecil dari simpangan baku) belum tentu berarti. -->
+Berdasarkan hasil eksperimen, seluruh skenario augmentasi menghasilkan nilai Dice Score dan IoU rata-rata yang lebih tinggi dibandingkan skenario tanpa augmentasi. Skenario horizontal flip memperoleh Dice Score tertinggi sebesar 0,605 ± 0,052 dan IoU sebesar 0,502 ± 0,045. Hasil ini menunjukkan bahwa augmentasi horizontal flip memberikan performa rata-rata terbaik dalam eksperimen yang dilakukan.
 
-✍️
+Skenario vertical flip menghasilkan Dice Score sebesar 0,604 ± 0,011 dan IoU sebesar 0,480 ± 0,013. Nilai Dice Score tersebut hampir sama dengan skenario horizontal flip, tetapi memiliki simpangan baku yang lebih kecil. Hal ini menunjukkan bahwa hasil pengulangan pada skenario vertical flip lebih konsisten. Sementara itu, augmentasi kecerahan dan kontras menghasilkan Dice Score sebesar 0,579 ± 0,031 dan IoU sebesar 0,466 ± 0,033. Meskipun hasilnya lebih baik dibandingkan skenario tanpa augmentasi, peningkatannya masih berada di bawah kedua skenario flip.
+
+Perbedaan hasil tersebut menunjukkan bahwa jenis augmentasi memberikan pengaruh yang berbeda terhadap performa model U-Net dalam melakukan segmentasi polip. Namun, selisih Dice Score antara horizontal flip dan vertical flip hanya sebesar 0,001. Oleh karena itu, nilai rata-rata yang lebih tinggi pada horizontal flip belum cukup untuk menyatakan bahwa skenario tersebut secara nyata lebih unggul. Hasil ini perlu dipahami berdasarkan nilai rata-rata dan variasi dari setiap pengulangan.
+
+Secara keseluruhan, augmentasi dapat membantu meningkatkan performa model U-Net pada eksperimen segmentasi polip yang dilakukan. Skenario horizontal flip memperoleh nilai rata-rata Dice Score dan IoU tertinggi, sedangkan vertical flip menunjukkan variasi hasil Dice Score yang lebih kecil. Dengan demikian, pemilihan augmentasi perlu mempertimbangkan tidak hanya nilai performa rata-rata, tetapi juga konsistensi hasil pengujian.
 
 ## 7. Pembagian kerja
 
