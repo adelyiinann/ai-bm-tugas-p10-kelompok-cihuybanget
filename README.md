@@ -17,9 +17,8 @@
 
 | Nama | NIM | Username GitHub | Kontribusi utama |
 |---|---|---|---|
-| ✍️ | ✍️ | ✍️ | ✍️ misal: menjalankan eksperimen, menulis Bagian 3 |
-| ✍️ | ✍️ | ✍️ | ✍️ |
-| ✍️ | ✍️ | ✍️ | ✍️ |
+| Adelya Dwi Putri | 123430034 | adelyiinann | Ketua kelompok, menyiapkan persiapan, membuat repo, menjalankan eksperimen di colab, commit hasil akhir |
+| Izzatul Jannah | 123430120 | izzatul.123430120-code | Menulis hipotesis Bagian 3, analisis Bagian 5, pembahasan Bagian 6 |
 
 ## 1. Pertanyaan
 
@@ -27,19 +26,18 @@ Augmentasi apa yang membantu U-Net menemukan polip pada citra kolonoskopi, dan a
 
 ## 2. Data & pengaturan
 
-<!-- Isi dari Bagian 2 notebook. Pastikan CEPAT = False untuk hasil akhir. -->
-
 - Dataset: Kvasir-SEG (1000 citra kolonoskopi + mask polip), diperkecil ke 128 × 128 piksel.
-- Data uji: 200 citra (tetap). Data latih: ✍️ citra per ulangan.
-- Model: U-Net mini (±0,5 juta parameter), ✍️ epoch, ✍️ ulangan per skenario.
-- Dijalankan di: ✍️ (misal: Google Colab T4 / laptop CPU / Mac M1).
+- Data uji: 200 citra (tetap). Data latih: 200 citra per ulangan, dipilih dari kumpulan 800 citra di luar data uji.
+- Model: U-Net mini (`k=16`), 40 epoch, 3 ulangan per skenario; `CEPAT = False`.
+- Dijalankan di: GPU CUDA (metadata notebook mencatat Google Colab T4). Output tersimpan mencatat waktu sekitar 4,2 menit.
+- Pembagian uji memakai seed 0; subset latih dan bobot awal disamakan antarskenario pada setiap ulangan (seed 0, 1, 2).
+- Adam (`lr=0.001`), batch 16, loss BCE-with-logits + Dice loss, ambang prediksi > 0,5.
+- Dice/IoU dirata-ratakan per citra pada 200 citra uji; simpangan baku antarulangan memakai `ddof=0`, sesuai notebook.
 
 ![Contoh data](hasil/contoh_data.png)
 
 ## 3. Skenario augmentasi & hipotesis
 
-<!-- Tulis bagian ini SEBELUM menjalankan eksperimen. Commit dulu, baru jalankan.
-     Alasan klinis = kenapa variasi ini mungkin (atau tidak mungkin) terjadi pada kolonoskopi sungguhan. -->
 
 | Skenario | Augmentasi (kode) | Alasan klinis | Hipotesis: Dice naik/turun/sama? |
 |---|---|---|---|
@@ -50,14 +48,23 @@ Augmentasi apa yang membantu U-Net menemukan polip pada citra kolonoskopi, dan a
 
 Contoh augmentasi yang dicoba:
 
-![Contoh augmentasi](hasil/augmentasi_flip.png)
-<!-- Ganti nama file sesuai skenario kalian (lihat isi folder hasil/). -->
+![Horizontal flip](hasil/augmentasi_horizontal_flip.png)
+
+![Vertical flip](hasil/augmentasi_vertical_flip.png)
+
+![Kecerahan dan kontras](hasil/augmentasi_kecerahan_dan_kontras.png)
+
 
 ## 4. Hasil
 
-<!-- Tempel isi hasil/ringkasan.md di sini. -->
+Sumber: [hasil.json](hasil/hasil.json), sesuai output notebook tersimpan.
 
-✍️ tempel tabel dari `hasil/ringkasan.md`
+| Skenario | Dice (rata-rata ± sb) | IoU (rata-rata ± sb) | Dice tiap ulangan |
+|---|---|---|---|
+| Tanpa augmentasi | 0.563 ± 0.018 | 0.450 ± 0.016 | 0.557, 0.587, 0.544 |
+| Horizontal flip | 0.605 ± 0.052 | 0.502 ± 0.045 | 0.625, 0.657, 0.535 |
+| Vertical flip | 0.604 ± 0.011 | 0.480 ± 0.013 | 0.593, 0.600, 0.619 |
+| Kecerahan & kontras | 0.579 ± 0.031 | 0.466 ± 0.033 | 0.590, 0.538, 0.611 |
 
 ![Perbandingan Dice](hasil/perbandingan.png)
 
@@ -90,19 +97,20 @@ Perbedaan hasil tersebut menunjukkan bahwa jenis augmentasi memberikan pengaruh 
 
 Secara keseluruhan, augmentasi dapat membantu meningkatkan performa model U-Net pada eksperimen segmentasi polip yang dilakukan. Skenario horizontal flip memperoleh nilai rata-rata Dice Score dan IoU tertinggi, sedangkan vertical flip menunjukkan variasi hasil Dice Score yang lebih kecil. Dengan demikian, pemilihan augmentasi perlu mempertimbangkan tidak hanya nilai performa rata-rata, tetapi juga konsistensi hasil pengujian.
 
+Hipotesis kenaikan Dice sesuai dengan arah rata-rata ketiga skenario, tetapi tidak berlaku pada setiap ulangan. Horizontal flip lebih rendah daripada pembanding pada ulangan ketiga (0,535 vs 0,544), dan kecerahan & kontras lebih rendah pada ulangan kedua (0,538 vs 0,587). Kenaikan rata-rata kecerahan & kontras sekitar 0,017, lebih kecil daripada simpangan bakunya 0,031. Tidak ada uji signifikansi, sehingga hasil ini bersifat deskriptif dan tidak membuktikan bahwa salah satu augmentasi selalu membantu.
+
+Batas eksperimen: hanya tiga ulangan, 200 citra latih per ulangan, resolusi 128 × 128, dan satu pembagian uji tetap. Hasil belum menunjukkan generalisasi ke rumah sakit lain. Bobot awal dan subset latih disamakan, tetapi augmentasi mengonsumsi bilangan acak sehingga urutan batch pada epoch berikutnya tidak dijamin identik antarskenario. Seluruh selisih hasil tidak dapat diatribusikan secara pasti hanya kepada augmentasi.
+
 ## 7. Pembagian kerja
 
-<!-- Siapa mengerjakan apa. Penilaian proses kerja dilihat dari riwayat commit tiap anggota. -->
+- **Adelya Dwi Putri:** persiapan tugas, pembuatan repo, menjalankan eksperimen dan kode.
+- **Izzatul Jannah:** analisis hasil eksperimen dan pembahasan.
 
-✍️
 
 ## 8. Penggunaan AI
 
-<!-- Wajib diisi, walau tidak memakai AI (tulis "Tidak memakai AI").
-     Contoh: "Claude Code (CLI) untuk menulis skenario augmentasi dan memperbaiki error di Bagian 4.
-     Draf Bagian 6 ditulis sendiri, lalu dirapikan bahasanya dengan bantuan AI." -->
-
-✍️
+- Claude (claude.ai) dipakai untuk memandu langkah pengerjaan git dan Colab, menentukan skenario augmentasi, dan membantu merapikan narasi README. Analisis hasil dan kesimpulan di Bagian 6 ditulis sendiri lalu dirapikan dengan bantuan AI.
+- Codex CLI untuk memeriksa kesesuaian hasil eksperimen dengan output notebook, melengkapi pengaturan dan tabel hasil pada README, serta merapikan draf analisis dan pembahasan yang telah dibuat. Codex juga membantu menjelaskan keterbatasan interpretasi hasil. Eksperimen telah dijalankan oleh anggota kelompok sebelum sesi bantuan ini.
 
 ## Cara menjalankan ulang
 
@@ -117,4 +125,4 @@ Atau buka notebook di Google Colab (Runtime → Change runtime type → T4 GPU).
 
 - Jha, D., dkk. (2020). Kvasir-SEG: A Segmented Polyp Dataset. *MultiMedia Modeling (MMM 2020)*, 451–462.
 - Ronneberger, O., Fischer, P., & Brox, T. (2015). U-Net: Convolutional Networks for Biomedical Image Segmentation. *MICCAI*. arXiv:1505.04597.
-- ✍️ tambahkan referensi lain yang kalian pakai
+- Petunjuk tugas: https://www.mctm.web.id/ai-bm/tugas
